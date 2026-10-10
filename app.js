@@ -61,6 +61,37 @@ app.post(['/students/add', '/add'], (req, res) => {
     });
 });
 
+// >>> DINAGDAG: STUDENT SEARCH ROUTE (ACTIVITY 22) <<<
+app.get('/students/search', (req, res) => {
+    const keyword = req.query.keyword || '';
+    const sql = `
+        SELECT * FROM students
+        WHERE student_id LIKE ?
+        OR first_name LIKE ?
+        OR last_name LIKE ?
+        OR course LIKE ?
+    `;
+    const searchValue = `%${keyword}%`;
+    db.query(
+        sql,
+        [
+            searchValue,
+            searchValue,
+            searchValue,
+            searchValue
+        ],
+        (err, results) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Search error');
+            }
+            res.render('index', {
+                students: results
+            });
+        }
+    );
+});
+
 // 4. SERVER START
 app.listen(3000, () => {
     console.log('Server running at http://localhost:3000');
